@@ -76,7 +76,7 @@ int print_count_nxarg(const char *format, va_list ap)
 			break;
 		default:
 			if (*format == '\0')
-				return (char_counter);
+				return (-1);
 			_putchar(*--format);
 			_putchar(*++format);
 			char_counter += 2;
