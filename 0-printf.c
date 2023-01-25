@@ -98,10 +98,8 @@ int _printf(const char *format, ...)
 	va_list ap;
 
 	char_counter = 0;
-
 	if (format == NULL)
-	       return (-1);	/*First condition to format display*/
-
+		return (-1);
 	va_start(ap, format);
 	while (*format != '\0')
 	{
