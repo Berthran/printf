@@ -31,13 +31,13 @@ int print_count_char(char c)
 
 int print_count_str(char *ptr_str)
 {
-	unsigned long int i;
 	int char_counter = 0;
 
-	for (i = 0; i < strlen(ptr_str); i++)
+	while (*ptr_str)
 	{
-		_putchar(ptr_str[i]);
+		_putchar(*ptr_str);
 		++char_counter;
+		++ptr_str;
 	}
 	return (char_counter);
 }
@@ -99,26 +99,26 @@ int _printf(const char *format, ...)
 
 	char_counter = 0;
 
-	if (format != NULL) /*First condition to format display*/
+	if (format == NULL)
+	       return (-1);	/*First condition to format display*/
+
+	va_start(ap, format);
+	while (*format != '\0')
 	{
-		va_start(ap, format);
-		while (*format != '\0')
+		/* Capture conversion specifier*/
+		if (*format == '%')
 		{
-			/* Capture conversion specifier*/
-			if (*format == '%')
-			{
-				char_counter += print_count_nxarg(format, ap);
-				++format;
-				if (*format == '\0')
-					return (char_counter);
-			}
-			else
-			{
-				char_counter += print_count_char(*format);
-			}
+			char_counter += print_count_nxarg(format, ap);
 			++format;
-			va_end(ap);
+			if (*format == '\0')
+				return (char_counter);
 		}
+		else
+		{
+			char_counter += print_count_char(*format);
+		}
+		++format;
+		va_end(ap);
 	}
 	return (char_counter);
 }
