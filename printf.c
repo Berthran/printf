@@ -60,6 +60,7 @@ int _printf(const char *format, ...)
 		parse_str_2 = strtok(NULL, "%");
 	}
 	free(fcopy);
+	va_end(args);
 	return (slen);
 }
 
@@ -92,6 +93,8 @@ int handle_fsp(char fsp, size_t slen, va_list args)
 			break;
 		case 's':
 			str = va_arg(args, char *);
+			if (str == NULL)
+
 			len = strlen(str);
 			write(1, str, len);
 			slen += len;
