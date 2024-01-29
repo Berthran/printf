@@ -42,6 +42,7 @@ int _printf(const char *format, ...)
 		write(1, fcopy, flen);
 		return (flen);
 	}
+	free(fcopy);
 
 	/* 2-> Conversion specifiers found */
 
