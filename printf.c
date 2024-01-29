@@ -59,6 +59,7 @@ int _printf(const char *format, ...)
 		slen += flen;
 		parse_str_2 = strtok(NULL, "%");
 	}
+	free(fcopy);
 	return (slen);
 }
 
