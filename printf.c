@@ -94,10 +94,17 @@ int handle_fsp(char fsp, size_t slen, va_list args)
 		case 's':
 			str = va_arg(args, char *);
 			if (str == NULL)
+			{
+				write(1, "(null)", 6);
+				slen += 6;
 
-			len = strlen(str);
-			write(1, str, len);
-			slen += len;
+			}  
+			else
+			{
+				len = strlen(str);
+				write(1, str, len);
+				slen += len;
+			}
 			break;
 		case 'd':
 			break;
