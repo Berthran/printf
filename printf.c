@@ -49,7 +49,6 @@ int _printf(const char *format, ...)
 	slen = strlen(parse_str_1);
 	write(1, parse_str_1, slen);
 	va_start(args, format);
-	free(fcopy);
 
 	while (parse_str_2 != NULL)
 	{
