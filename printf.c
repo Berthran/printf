@@ -1,117 +1,124 @@
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 #include "main.h"
-
-int handle_fsp(char fsp, size_t slen, va_list args);
+#include <stdarg.h>
+#include <unistd.h>
+#include <string.h>
 
 /**
- * _printf - writes formatted string to stdout
- * @format: the format string to format and display
+ * print_count_char - writes the character c to stdout and counts it
+ * @c: The character to print
  *
- * Return: no of bytes printed or -1 if fail
+ * Return: 1
+ */
+
+int print_count_char(char c)
+{
+	int char_counter = 0;
+
+	if (c != '%')
+	{
+		_putchar(c);
+		++char_counter;
+	}
+	return (char_counter);
+}
+
+/**
+ * print_count_str - writes characters to stdout and counts each one
+ * @ptr_str: The characters to print
+ *
+ * Return: number of characters counted
+ */
+
+int print_count_str(char *ptr_str)
+{
+	unsigned long int i;
+	int char_counter = 0;
+
+	for (i = 0; i < strlen(ptr_str); i++)
+	{
+		_putchar(ptr_str[i]);
+		++char_counter;
+	}
+	return (char_counter);
+}
+
+/**
+ * print_count_nxarg - write chars in next arg to stdout and counts them
+ * @format: the current position of the pointer to the string
+ * @ap: argument list passed to the _printf function
+ *
+ * Return: number of characters printed from the next argument
+ */
+
+int print_count_nxarg(const char *format, va_list ap)
+{
+	int cval;
+	char *str;
+	char *null_str = "(null)";
+	int char_counter = 0;
+
+	switch (*++format) /* go to next character */
+	{
+		case '%':
+			_putchar('%');
+			++char_counter;
+			break;
+		case 'c':
+			cval = va_arg(ap, int);
+			char_counter += print_count_char(cval);
+			break;
+		case 's':
+			str = va_arg(ap, char *);
+			if (str == NULL)
+				char_counter += print_count_str(null_str);
+			else
+				char_counter += print_count_str(str);
+			break;
+		default:
+			if (*format == '\0')
+				return (char_counter);
+			_putchar(*--format);
+			_putchar(*++format);
+			char_counter += 2;
+			break;
+	}
+	return (char_counter);
+}
+
+/**
+ * _printf - writes a formated string to stdout and counts it
+ * @format: the string to format
+ *
+ * Return: number of characters printed from the next argument
  */
 
 int _printf(const char *format, ...)
 {
-	char *fcopy, *parse_str_1, *parse_str_2;
-	size_t flen, slen;
-	char fsp = '\0';
-	va_list args;
+	int char_counter;
+	va_list ap;
 
+	char_counter = 0;
 
-	/* IS FORMAT NULL? */
-	if (format == NULL)
-		return (-1);
-
-	/* CREATE LOCAL COPY OF FORMAT STRING */
-	flen = strlen(format);
-	fcopy = (char *)malloc(sizeof(char) * flen);
-	strcpy(fcopy, format);
-
-	/* CHECK FOR CONVERSION SPECIFIERS? */
-	/* First parsing initializes pointer to tokenizer */
-	parse_str_1 = strtok(fcopy, "%");
-	parse_str_2 = strtok(NULL, "%");
-
-	/* 1-> No conversion specifiers, WRITE TO STDOUT */
-	if (parse_str_2 == NULL)
+	if (format != NULL) /*First condition to format display*/
 	{
-		write(1, fcopy, flen);
-		return (flen);
-	}
-
-	/* 2-> Conversion specifiers found */
-
-	/* Write text preceding first instance of % to STDOUT */
-	slen = strlen(parse_str_1);
-	write(1, parse_str_1, slen);
-	va_start(args, format);
-
-	while (parse_str_2 != NULL)
-	{
-		fsp = *parse_str_2;
-		slen = handle_fsp(fsp, slen, args);
-		flen = strlen(++parse_str_2);
-		write(1, parse_str_2, flen);
-		slen += flen;
-		parse_str_2 = strtok(NULL, "%");
-	}
-	free(fcopy);
-	va_end(args);
-	return (slen);
-}
-
-
-/**
- * handle_fsp - handles the format specifier characters
- * @fsp: the format specifier character
- * @slen: the current length of printed bytes
- * @args: list of variable arguments
- *
- * Return: summed number of printed bytes
- */
-
-int handle_fsp(char fsp, size_t slen, va_list args)
-{
-	char c;
-	char *str;
-	size_t len;
-
-	switch (fsp)
-	{
-		case '%':
-			write(1, "%", 1);
-			slen += 1;
-			break;
-		case 'c':
-			c = va_arg(args, int);
-			write(1, &c, 1);
-			slen += 1;
-			break;
-		case 's':
-			str = va_arg(args, char *);
-			if (str == NULL)
+		va_start(ap, format);
+		while (*format != '\0')
+		{
+			/* Capture conversion specifier*/
+			if (*format == '%')
 			{
-				write(1, "(null)", 6);
-				slen += 6;
-
-			}  
+				char_counter += print_count_nxarg(format, ap);
+				++format;
+				if (*format == '\0')
+					return (char_counter);
+			}
 			else
 			{
-				len = strlen(str);
-				write(1, str, len);
-				slen += len;
+				char_counter += print_count_char(*format);
 			}
-			break;
-		case 'd':
-			break;
-		default:
-			write(1, "%", 1);
-			write(1, &fsp, 1);
-			slen += 2;
+			++format;
+			va_end(ap);
+		}
 	}
-	return (slen);
+	return (char_counter);
 }
